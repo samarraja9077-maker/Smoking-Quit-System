@@ -83,12 +83,12 @@ jobs:
 
           echo "Android project found at: $PROJECT_DIR"
 
-      - name: Build APK
-        shell: bash
+            - name: Build APK
         run: |
           cd "$PROJECT_DIR"
-          gradle --no-daemon --stacktrace assembleDebug
-
+          printf '\nandroid.useAndroidX=true\nandroid.enableJetifier=true\n' >> gradle.properties
+          echo "AndroidX configuration added"
+          gradle --no-daemon assembleDebug
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
