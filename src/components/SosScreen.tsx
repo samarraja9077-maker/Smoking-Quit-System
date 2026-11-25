@@ -7,19 +7,18 @@ export function SosScreen({ lang }: { lang: AppLanguage }) {
   const [running, setRunning] = useState(false);
 
   useEffect(() => {
-    if (!running || seconds <= 0) return;
-    const id = window.setTimeout(() => {
+    if (!running) return;
+    const id = window.setInterval(() => {
       setSeconds((prev) => {
-        const next = prev - 1;
-        if (next <= 0) {
+        if (prev <= 1) {
           setRunning(false);
           return 0;
         }
-        return next;
+        return prev - 1;
       });
     }, 1000);
-    return () => window.clearTimeout(id);
-  }, [running, seconds]);
+    return () => window.clearInterval(id);
+  }, [running]);
 
   const mins = Math.floor(seconds / 60);
   const secs = (seconds % 60).toString().padStart(2, '0');

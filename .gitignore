@@ -15,6 +15,7 @@ local.properties
 *.keystore
 !debug.keystore
 .idea/
+.kotlin/
 *.iml
 
 # Node / Web backup
@@ -23,3 +24,5 @@ dist/
 tsconfig.tsbuildinfo
 .env
 .env.local
+dist-apks/
+public/*.apk

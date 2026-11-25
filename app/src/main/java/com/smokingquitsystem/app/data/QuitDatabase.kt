@@ -1,6 +1,7 @@
 package com.smokingquitsystem.app.data
 
 import android.content.Context
+import androidx.compose.runtime.Immutable
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -12,6 +13,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import kotlinx.coroutines.flow.Flow
 
+@Immutable
 @Entity(tableName = "quit_profile")
 data class QuitProfileEntity(
     @PrimaryKey val id: Int = 1,
@@ -26,6 +28,7 @@ data class QuitProfileEntity(
     val remindersEnabled: Boolean = true
 )
 
+@Immutable
 @Entity(tableName = "craving_logs")
 data class CravingLogEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

@@ -137,7 +137,7 @@ fun ProgressScreen(
                 fontSize = 18.sp
             )
         }
-        items(MILESTONES) { milestone ->
+        items(MILESTONES, key = { it.title }) { milestone ->
             val reached = elapsed >= milestone.thresholdMs
             Card(
                 colors = CardDefaults.cardColors(containerColor = Panel),

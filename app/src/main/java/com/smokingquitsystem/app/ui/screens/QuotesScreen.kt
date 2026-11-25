@@ -57,7 +57,7 @@ fun QuotesScreen(lang: String) {
                 fontWeight = FontWeight.Bold
             )
         }
-        items(ENGLISH_QUOTES.size) { index ->
+        items(ENGLISH_QUOTES.size, key = { it }) { index ->
             Card(
                 colors = CardDefaults.cardColors(containerColor = Panel),
                 shape = RoundedCornerShape(18.dp),

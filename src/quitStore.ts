@@ -96,14 +96,20 @@ export function getDays(prefs: QuitPrefs, now: number): number {
 
 export function getCigsSaved(prefs: QuitPrefs, now: number): number {
   const totalDays = Math.floor(elapsedMs(prefs, now) / 86_400_000);
+  if (totalDays <= 0) return 0;
   const base = prefs.cigsDay;
   if (prefs.activeMode !== 'Gradual reduction') {
     return totalDays * base;
   }
   let sum = 0;
-  for (let day = 0; day < totalDays; day++) {
-    const reduction = Math.min(1.0, Math.max(0.0, Math.floor(day / 7) * 0.2));
-    sum += Math.trunc(base * reduction);
+  for (let week = 0; week <= 4; week++) {
+    const startDay = week * 7;
+    if (totalDays <= startDay) break;
+    const daysInWeek = Math.min(7, totalDays - startDay);
+    sum += daysInWeek * Math.trunc(base * (week * 0.2));
+  }
+  if (totalDays > 35) {
+    sum += (totalDays - 35) * base;
   }
   return sum;
 }

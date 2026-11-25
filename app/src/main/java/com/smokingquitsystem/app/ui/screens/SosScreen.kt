@@ -46,8 +46,8 @@ fun SosScreen(lang: String, onSosCompleted: () -> Unit) {
     var seconds by remember { mutableIntStateOf(120) }
     var running by remember { mutableStateOf(false) }
 
-    LaunchedEffect(running, seconds) {
-        if (running && seconds > 0) {
+    LaunchedEffect(running) {
+        while (running && seconds > 0) {
             delay(1000L)
             seconds--
             if (seconds == 0) {
@@ -55,6 +55,23 @@ fun SosScreen(lang: String, onSosCompleted: () -> Unit) {
                 onSosCompleted()
             }
         }
+    }
+
+    val tips = remember(lang) {
+        listOf(
+            tr(lang, "Take 5 slow breaths.", "5 aahista saans lein."),
+            tr(lang, "Drink a glass of water.", "Aik glass pani piyen."),
+            tr(
+                lang,
+                "Move away from your smoking trigger.",
+                "Smoking wali jagah ya trigger se door ho jayein."
+            ),
+            tr(
+                lang,
+                "Message someone who supports you.",
+                "Kisi supportive dost ya ghar walay ko message karein."
+            )
+        )
     }
 
     LazyColumn(
@@ -65,7 +82,7 @@ fun SosScreen(lang: String, onSosCompleted: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item {
+        item(key = "header") {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -88,7 +105,7 @@ fun SosScreen(lang: String, onSosCompleted: () -> Unit) {
                 )
             }
         }
-        item {
+        item(key = "timer") {
             Box(
                 modifier = Modifier
                     .size(210.dp)
@@ -110,7 +127,7 @@ fun SosScreen(lang: String, onSosCompleted: () -> Unit) {
                 }
             }
         }
-        item {
+        item(key = "actions") {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Button(
                     onClick = {
@@ -140,7 +157,7 @@ fun SosScreen(lang: String, onSosCompleted: () -> Unit) {
                 }
             }
         }
-        item {
+        item(key = "tips") {
             Card(
                 colors = CardDefaults.cardColors(containerColor = Panel),
                 shape = RoundedCornerShape(18.dp),
@@ -152,20 +169,7 @@ fun SosScreen(lang: String, onSosCompleted: () -> Unit) {
                         color = Green,
                         fontWeight = FontWeight.Bold
                     )
-                    listOf(
-                        tr(lang, "Take 5 slow breaths.", "5 aahista saans lein."),
-                        tr(lang, "Drink a glass of water.", "Aik glass pani piyen."),
-                        tr(
-                            lang,
-                            "Move away from your smoking trigger.",
-                            "Smoking wali jagah ya trigger se door ho jayein."
-                        ),
-                        tr(
-                            lang,
-                            "Message someone who supports you.",
-                            "Kisi supportive dost ya ghar walay ko message karein."
-                        )
-                    ).forEach { tip ->
+                    tips.forEach { tip ->
                         Text(
                             "• $tip",
                             color = White,

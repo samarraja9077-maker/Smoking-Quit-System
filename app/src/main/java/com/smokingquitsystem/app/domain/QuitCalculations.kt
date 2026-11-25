@@ -21,12 +21,21 @@ object QuitCalculations {
         activeMode: String
     ): Int {
         val totalDays = (elapsedMs(quitStartMillis, nowMillis) / DAY_MS).toInt()
+        if (totalDays <= 0) return 0
         val gradual = activeMode == "Gradual reduction"
         if (!gradual) return totalDays * cigsPerDay
-        return (0 until totalDays).sumOf { day ->
-            val reduction = ((day / 7) * 0.20).coerceIn(0.0, 1.0)
-            (cigsPerDay * reduction).toInt()
+
+        var total = 0
+        for (week in 0..4) {
+            val startDay = week * 7
+            if (totalDays <= startDay) break
+            val daysInWeek = minOf(7, totalDays - startDay)
+            total += daysInWeek * (cigsPerDay * (week * 0.20)).toInt()
         }
+        if (totalDays > 35) {
+            total += (totalDays - 35) * cigsPerDay
+        }
+        return total
     }
 
     fun moneySaved(cigsAvoided: Int, packPrice: Float, packSize: Int): Int {

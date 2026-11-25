@@ -1,6 +1,7 @@
 package com.smokingquitsystem.app.ui
 
 import android.app.Application
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.smokingquitsystem.app.data.CravingLogEntity
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+@Immutable
 data class QuitUiState(
     val loaded: Boolean = false,
     val profile: QuitProfileEntity = QuitProfileEntity(),

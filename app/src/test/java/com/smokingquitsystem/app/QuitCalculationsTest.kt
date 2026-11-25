@@ -28,6 +28,9 @@ class QuitCalculationsTest {
         val cigs = QuitCalculations.cigsAvoided(start, now, 10, "Gradual reduction")
         assertEquals(14, cigs)
         assertEquals(6, QuitCalculations.gradualTargetPerDay(14L, 10, "Gradual reduction"))
+
+        val day40 = 40 * dayMs // 0 + 14 + 28 + 42 + 56 + 50 = 190
+        assertEquals(190, QuitCalculations.cigsAvoided(start, day40, 10, "Gradual reduction"))
     }
 
     @Test

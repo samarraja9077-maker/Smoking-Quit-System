@@ -101,7 +101,7 @@ fun SmokingQuitApp(viewModel: QuitViewModel = viewModel()) {
     val sosCount by viewModel.sosCount.collectAsStateWithLifecycle()
 
     var page by remember { mutableStateOf("Home") }
-    var nowMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    var nowMinute by remember { mutableLongStateOf(System.currentTimeMillis() / 60_000L) }
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -109,19 +109,23 @@ fun SmokingQuitApp(viewModel: QuitViewModel = viewModel()) {
 
     LaunchedEffect(Unit) {
         while (true) {
-            delay(1000L)
-            nowMillis = System.currentTimeMillis()
+            val now = System.currentTimeMillis()
+            val delayMs = 60_000L - (now % 60_000L) + 50L
+            delay(delayMs)
+            nowMinute = System.currentTimeMillis() / 60_000L
         }
     }
 
-    fun requestNotificationPermissionIfNeeded() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val granted = ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-            if (!granted) {
-                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+    val requestNotificationPermissionIfNeeded = remember(context, notificationPermissionLauncher) {
+        {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val granted = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+                if (!granted) {
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
             }
         }
     }
@@ -148,6 +152,7 @@ fun SmokingQuitApp(viewModel: QuitViewModel = viewModel()) {
                 )
             } else {
                 val lang = uiState.profile.language
+                val nowMillis = remember(nowMinute) { System.currentTimeMillis() }
                 Column(Modifier.fillMaxSize()) {
                     Row(
                         modifier = Modifier
@@ -196,19 +201,17 @@ fun SmokingQuitApp(viewModel: QuitViewModel = viewModel()) {
                                 nowMillis,
                                 sosCount
                             )
-                            "SOS" -> SosScreen(lang) {
-                                viewModel.recordSosCompleted()
-                            }
+                            "SOS" -> SosScreen(lang, viewModel::recordSosCompleted)
                             "Quotes" -> QuotesScreen(lang)
                             else -> SettingsScreen(
                                 profile = uiState.profile,
-                                onLanguageChange = { viewModel.updateLanguage(it) },
+                                onLanguageChange = viewModel::updateLanguage,
                                 onRemindersToggle = { enabled ->
                                     if (enabled) requestNotificationPermissionIfNeeded()
                                     viewModel.updateReminders(enabled)
                                 },
-                                onActiveModeChange = { viewModel.updateActiveMode(it) },
-                                onResetSetup = { viewModel.resetSetup() }
+                                onActiveModeChange = viewModel::updateActiveMode,
+                                onResetSetup = viewModel::resetSetup
                             )
                         }
                     }

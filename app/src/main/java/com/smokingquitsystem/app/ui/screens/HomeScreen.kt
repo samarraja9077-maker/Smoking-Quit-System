@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -32,16 +33,26 @@ import com.smokingquitsystem.app.ui.theme.White
 
 @Composable
 fun HomeScreen(profile: QuitProfileEntity, lang: String, nowMillis: Long) {
-    val day = QuitCalculations.daysOnJourney(profile.quitStartMillis, nowMillis)
-    val cigs = QuitCalculations.cigsAvoided(
-        profile.quitStartMillis,
-        nowMillis,
-        profile.cigsPerDay,
-        profile.activeMode
-    )
-    val money = QuitCalculations.moneySaved(cigs, profile.packPrice, profile.packSize)
-    val durationText = QuitCalculations.formatDuration(profile.quitStartMillis, nowMillis)
-    val title = tr(lang, "Your smoke-free journey", "Aapka smoke-free safar")
+    val day = remember(profile.quitStartMillis, nowMillis) {
+        QuitCalculations.daysOnJourney(profile.quitStartMillis, nowMillis)
+    }
+    val cigs = remember(profile.quitStartMillis, nowMillis, profile.cigsPerDay, profile.activeMode) {
+        QuitCalculations.cigsAvoided(
+            profile.quitStartMillis,
+            nowMillis,
+            profile.cigsPerDay,
+            profile.activeMode
+        )
+    }
+    val money = remember(cigs, profile.packPrice, profile.packSize) {
+        QuitCalculations.moneySaved(cigs, profile.packPrice, profile.packSize)
+    }
+    val durationText = remember(profile.quitStartMillis, nowMillis) {
+        QuitCalculations.formatDuration(profile.quitStartMillis, nowMillis)
+    }
+    val title = remember(lang) {
+        tr(lang, "Your smoke-free journey", "Aapka smoke-free safar")
+    }
 
     LazyColumn(
         modifier = Modifier

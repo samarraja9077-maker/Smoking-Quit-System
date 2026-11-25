@@ -30,8 +30,16 @@ export function App() {
   const [now, setNow] = useState<number>(() => Date.now());
 
   useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
+    let intervalId: number | undefined;
+    const msUntilNextMinute = 60_000 - (Date.now() % 60_000) + 50;
+    const timeoutId = window.setTimeout(() => {
+      setNow(Date.now());
+      intervalId = window.setInterval(() => setNow(Date.now()), 60_000);
+    }, msUntilNextMinute);
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (intervalId !== undefined) window.clearInterval(intervalId);
+    };
   }, []);
 
   useEffect(() => {
@@ -82,6 +90,16 @@ export function App() {
   return (
     <div className="min-h-screen w-full bg-[#08130F] text-[#F2F7F3]">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-[#08130F]">
+        <div className="flex items-center justify-between border-b border-[#1B3B2A] bg-[#12231B] px-4 py-2 text-xs">
+          <span className="text-[#9FB7A9]">Native Android APK ready</span>
+          <a
+            href="/download/apk"
+            download="SmokingQuitSystem-debug.apk"
+            className="rounded-lg bg-[#35D07F] px-3 py-1 font-bold text-[#08130F]"
+          >
+            Download APK
+          </a>
+        </div>
         {!prefs.configured ? (
           <SetupScreen initialLang={prefs.language} onDone={handleSetupDone} />
         ) : (
