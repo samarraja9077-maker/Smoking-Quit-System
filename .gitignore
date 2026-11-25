@@ -1,0 +1,25 @@
+# Android / Gradle
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+out/
+.gradle/
+build/
+app/build/
+local.properties
+*.jks
+*.keystore
+!debug.keystore
+.idea/
+*.iml
+
+# Node / Web backup
+node_modules/
+dist/
+tsconfig.tsbuildinfo
+.env
+.env.local

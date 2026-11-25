@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Shield / Leaf emblem in #35D07F -->
+    <path
+        android:fillColor="#35D07F"
+        android:pathData="M54,28C41,34 35,44 35,56c0,11 8,20 19,24c11,-4 19,-13 19,-24C73,44 67,34 54,28z" />
+    <path
+        android:fillColor="#08130F"
+        android:pathData="M51.5,58.2L44.8,51.5l-3.1,3.1l9.8,9.8l16.8,-16.8l-3.1,-3.1z" />
+</vector>

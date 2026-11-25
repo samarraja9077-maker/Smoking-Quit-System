@@ -14,36 +14,58 @@ export const DEFAULT_PREFS: QuitPrefs = {
   reminders: true,
 };
 
-export function loadPrefs(): QuitPrefs {
+function sanitizePrefs(raw: string | null | undefined): QuitPrefs | null {
+  if (!raw) return null;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { ...DEFAULT_PREFS, quitStart: Date.now() };
     const parsed = JSON.parse(raw) as Partial<QuitPrefs>;
     return {
       configured: Boolean(parsed.configured),
       quitStart: typeof parsed.quitStart === 'number' ? parsed.quitStart : Date.now(),
-      cigsDay: typeof parsed.cigsDay === 'number' ? Math.min(100, Math.max(1, Math.trunc(parsed.cigsDay))) : 10,
+      cigsDay:
+        typeof parsed.cigsDay === 'number'
+          ? Math.min(100, Math.max(1, Math.trunc(parsed.cigsDay)))
+          : 10,
       packPrice: typeof parsed.packPrice === 'number' ? Math.max(0, parsed.packPrice) : 500,
-      packSize: typeof parsed.packSize === 'number' ? Math.min(100, Math.max(1, Math.trunc(parsed.packSize))) : 20,
-      method: parsed.method === 'Gradual reduction' || parsed.method === 'Quit immediately' || parsed.method === 'Both'
-        ? parsed.method
-        : 'Both',
-      activeMode: parsed.activeMode === 'Gradual reduction' ? 'Gradual reduction' : 'Quit immediately',
-      language: parsed.language === 'English' || parsed.language === 'Roman Urdu' || parsed.language === 'Both'
-        ? parsed.language
-        : 'Both',
+      packSize:
+        typeof parsed.packSize === 'number'
+          ? Math.min(100, Math.max(1, Math.trunc(parsed.packSize)))
+          : 20,
+      method:
+        parsed.method === 'Gradual reduction' ||
+        parsed.method === 'Quit immediately' ||
+        parsed.method === 'Both'
+          ? parsed.method
+          : 'Both',
+      activeMode:
+        parsed.activeMode === 'Gradual reduction' ? 'Gradual reduction' : 'Quit immediately',
+      language:
+        parsed.language === 'English' ||
+        parsed.language === 'Roman Urdu' ||
+        parsed.language === 'Both'
+          ? parsed.language
+          : 'Both',
       reminders: parsed.reminders !== undefined ? Boolean(parsed.reminders) : true,
     };
   } catch {
-    return { ...DEFAULT_PREFS, quitStart: Date.now() };
+    return null;
   }
+}
+
+export function loadPrefs(): QuitPrefs {
+  try {
+    const parsed = sanitizePrefs(localStorage.getItem(STORAGE_KEY));
+    if (parsed) return parsed;
+  } catch {
+    // Ignore localStorage read errors
+  }
+  return { ...DEFAULT_PREFS, quitStart: Date.now() };
 }
 
 export function savePrefs(prefs: QuitPrefs): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
   } catch {
-    // Ignore storage quota errors
+    // Ignore localStorage quota errors
   }
 }
 
@@ -137,7 +159,6 @@ export function scheduleBrowserReminders(enabled: boolean, lang: AppLanguage): v
       target.setDate(target.getDate() + 1);
     }
     const delay = target.getTime() - now.getTime();
-    // Browser setTimeout max delay is ~24.8 days, 24h is well within limit
     const id = window.setTimeout(() => {
       if (Notification.permission === 'granted') {
         new Notification('Smoking Quit System', {

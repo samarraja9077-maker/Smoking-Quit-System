@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_dark">#08130F</color>
+    <color name="panel_dark">#12231B</color>
+    <color name="green_primary">#35D07F</color>
+    <color name="white_text">#F2F7F3</color>
+</resources>
